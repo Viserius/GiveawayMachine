@@ -14,7 +14,14 @@ namespace Giveaway_Machine.Controller
         // Prepare the parser
         public Parser()
         {
+            Console.BackgroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("Initializing Parser");
+
+            Console.WriteLine("Attempting to register all commands...");
             commands = Command.getAllCommandsDictionary();
+            Console.WriteLine($"{commands.Count} Commands are now successfully registered.");
+
+            Console.WriteLine("Initializing Parser completed.");
         }
 
         public bool ParseCommand(string args)

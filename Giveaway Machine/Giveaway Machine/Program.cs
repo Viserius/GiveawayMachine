@@ -30,7 +30,7 @@ namespace Giveaway_Machine
         static void Main(string[] args)
         {
             initializeProgram();
-            Parser parser = new Parser();
+            Facade facade = new Facade();
 
             bool exit = false;
             while(!exit)
@@ -45,7 +45,7 @@ namespace Giveaway_Machine
                 Console.ForegroundColor = ConsoleColor.White;
 
                 // Read the input and handle it
-                exit = parser.ParseCommand(Console.ReadLine());
+                exit = facade.Parser.ParseCommand(Console.ReadLine());
 
             }
         }

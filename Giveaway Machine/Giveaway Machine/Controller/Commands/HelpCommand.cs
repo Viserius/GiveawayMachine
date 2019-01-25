@@ -28,7 +28,7 @@ namespace Giveaway_Machine.Controller.Commands
             Console.WriteLine("");
             Console.WriteLine("The Following commands are available:");
 
-            List<Command> commands = Command.getAllCommands();
+            List<Command> commands = getAllCommands();
             foreach(Command command in commands)
             {
                 Console.WriteLine($"        {command.Name} - {command.Description}");
