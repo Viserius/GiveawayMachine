@@ -15,15 +15,15 @@ namespace Giveaway_Machine.Controller.Commands
 
         public override bool isExit { get; }
 
-        public RunCommand()
+        public RunCommand(Facade facade) : base(facade)
         {
             Name = "run";
 
-            StringBuilder descriptionSB = new StringBuilder("Execute one of the giveaway runners.");
-            descriptionSB.AppendLine();
-            foreach(AbstractRunner runner in AbstractRunner.getRunners())
+            StringBuilder descriptionSB = new StringBuilder("").AppendLine();
+            descriptionSB.AppendLine("Execute one of the giveaway runners");
+            foreach(KeyValuePair<string, AbstractRunner> kv in facade.RunnerHandler.getRunners())
             {
-                descriptionSB.AppendLine("            run " + runner.Name);
+                descriptionSB.AppendLine("            run " + kv.Key);
             }
             Description = descriptionSB.ToString();
         }
@@ -32,11 +32,11 @@ namespace Giveaway_Machine.Controller.Commands
         {
             if(arguments.Count < 1)
             {
-                Console.BackgroundColor = ConsoleColor.Red;
-                Console.WriteLine("Invalid arguments provided. Please type help for usage.");
+                logger.Warn("Invalid arguments provided. Please type help for usage.");
                 return;
             }
-            throw new NotImplementedException();
+
+            facade.RunnerHandler.startRunner(arguments[0]);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Giveaway_Machine.Controller.Commands
         public override string Description { get; }
         public override bool isExit { get; }
 
-        public ExitCommand()
+        public ExitCommand(Facade facade) : base(facade)
         {
             Name = "exit";
             Description = "Close this application";
@@ -21,9 +21,8 @@ namespace Giveaway_Machine.Controller.Commands
 
         public override void Execute(List<string> arguments)
         {
-            Console.BackgroundColor = ConsoleColor.DarkRed;
-
-            Console.WriteLine("The Application is now closing...");
+            logger.Info("The Application is now closing...");
+            facade.RunnerHandler.exitApplication();
             System.Threading.Thread.Sleep(1000);
         }
     }

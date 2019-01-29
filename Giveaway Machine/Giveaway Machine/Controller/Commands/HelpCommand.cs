@@ -14,7 +14,7 @@ namespace Giveaway_Machine.Controller.Commands
 
         public override bool isExit { get; }
 
-        public HelpCommand()
+        public HelpCommand(Facade facade) : base(facade)
         {
             Name = "help";
             Description = "Show a list of available commands";
@@ -23,15 +23,13 @@ namespace Giveaway_Machine.Controller.Commands
 
         public override void Execute(List<string> arguments)
         {
-            Console.BackgroundColor = ConsoleColor.DarkGray;
+            logger.Info("");
+            logger.Info("The Following commands are available:");
 
-            Console.WriteLine("");
-            Console.WriteLine("The Following commands are available:");
-
-            List<Command> commands = getAllCommands();
-            foreach(Command command in commands)
+            Dictionary<string, Command> commands = facade.CommandHandler.getCommands();
+            foreach(KeyValuePair<string, Command> kv in commands)
             {
-                Console.WriteLine($"        {command.Name} - {command.Description}");
+                logger.Info($"        {kv.Key} - {kv.Value.Description}");
             }
         }
     }

@@ -7,26 +7,43 @@ using System.Configuration;
 using System.Collections.Specialized;
 using Tweetinvi;
 using Tweetinvi.Models;
+using Giveaway_Machine.Controller;
 
 namespace Giveaway_Machine.API
 {
     class Twitter
     {
-        public Twitter()
-        {
-            Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Initializing Twitter API.");
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private Facade facade;
 
-            Console.WriteLine("Setting Twitter Credentials.");
+        public Twitter(Facade facade)
+        {
+            logger.Info("Initializing Twitter API.");
+
+            this.facade = facade;
+
+            logger.Info("Loading Twitter Credentials...");
             // Set credentials
             Auth.ApplicationCredentials = new TwitterCredentials(
                 ConfigurationManager.AppSettings.Get("TwitterConsumerKey"),
-                ConfigurationManager.AppSettings.Get("CONSUMER_SECRET"),
-                ConfigurationManager.AppSettings.Get("ACCESS_TOKEN"),
-                ConfigurationManager.AppSettings.Get("ACCESS_TOKEN_SECRET")
-            );
-            Console.WriteLine("Twitter Credentials are now set.");
+                ConfigurationManager.AppSettings.Get("TwitterConsumerSecret"),
+                ConfigurationManager.AppSettings.Get("TwitterAccessToken"),
+                ConfigurationManager.AppSettings.Get("TwitterAccessTokenSecret")
+                );
+            logger.Info("Twitter Credentials are now loaded.");
+        }
 
+        public bool twitterAuthenticated()
+        {
+            try
+            {
+                var user = User.GetAuthenticatedUser(Auth.ApplicationCredentials);
+            } catch(Exception e)
+            {
+                logger.Error(e, "Could not authenticate to twitter!");
+                return false;
+            }
+            return true;
         }
     }
 }

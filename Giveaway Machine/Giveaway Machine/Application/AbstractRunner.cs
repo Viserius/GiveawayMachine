@@ -9,26 +9,17 @@ namespace Giveaway_Machine.Application
 {
     abstract class AbstractRunner
     {
+        protected static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         abstract public string Name { get; }
-
         abstract public void Run();
+        protected Facade facade;
 
-        public static List<AbstractRunner> getRunners()
+
+        public AbstractRunner(Facade facade)
         {
-            IEnumerable<Type> types = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Where(t => t.Namespace.StartsWith("Giveaway_Machine.Application"))
-                .Where(t => t.Name.Contains("Runner"))
-                .Where(t => !t.Name.Equals("AbstractRunner"));
-
-            List<AbstractRunner> runners = new List<AbstractRunner>();
-            foreach(Type t in types)
-            {
-                runners.Add((AbstractRunner)Activator.CreateInstance(t));
-            }
-
-            return runners;
+            this.facade = facade;
         }
+
+        abstract public void Stop();
     }
 }

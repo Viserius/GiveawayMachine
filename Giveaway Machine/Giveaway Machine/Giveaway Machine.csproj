@@ -63,6 +63,9 @@
     <Reference Include="Nito.Disposables, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7247f14397bf67b9, processorArchitecture=MSIL">
       <HintPath>..\packages\NitoAsyncEx.Context.StrongName.1.1.0\lib\net461\Nito.Disposables.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
@@ -73,6 +76,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Http.4.3.2\lib\net46\System.Net.Http.dll</HintPath>
@@ -114,6 +118,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -146,28 +152,67 @@
     <Reference Include="Tweetinvi.WebLogic, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7247f14397bf67b9, processorArchitecture=MSIL">
       <HintPath>..\packages\TweetinviAPI.4.0.0\lib\net461\Tweetinvi.WebLogic.dll</HintPath>
     </Reference>
+    <Reference Include="WebDriver, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver.Support, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.Support.3.141.0\lib\net45\WebDriver.Support.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Twitter.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamCustomURL.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamDailyBonus.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamDiscordJoin.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamFacebookViewPost.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamInstagramViewPost.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamNewsletter.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamTwitterFollow.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamTwitterHashtag.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamTwitterRetweet.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamTwitterTweet.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamYoutubeSubscribe.cs" />
+    <Compile Include="Application\Gleam\GleamEntries\GleamYoutubeView.cs" />
+    <Compile Include="Application\Gleam\GleamEntryActivator.cs" />
     <Compile Include="Application\Gleam\GleamFetcher.cs" />
     <Compile Include="Application\Gleam\GleamGiveaway.cs" />
+    <Compile Include="Application\Gleam\GleamProcessor.cs" />
     <Compile Include="Application\Gleam\GleamRunner.cs" />
-    <Compile Include="Application\IFetcher.cs" />
-    <Compile Include="Application\IGiveaway.cs" />
     <Compile Include="Application\AbstractRunner.cs" />
+    <Compile Include="Application\ReturnedCookieConverter.cs" />
+    <Compile Include="Application\RunnerHandler.cs" />
     <Compile Include="Controller\Commands\ExitCommand.cs" />
     <Compile Include="Controller\Commands\HelpCommand.cs" />
     <Compile Include="Controller\Command.cs" />
     <Compile Include="Controller\Commands\RunCommand.cs" />
-    <Compile Include="Controller\Facade.cs" />
-    <Compile Include="Controller\Parser.cs" />
+    <Compile Include="Application\Facade.cs" />
+    <Compile Include="Controller\CommandHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="GiveawayMachine.config" />
+    <Content Include="chromedriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="geckodriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

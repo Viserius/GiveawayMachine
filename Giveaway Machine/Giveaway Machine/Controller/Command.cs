@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Giveaway_Machine.Controller
 {
     abstract class Command
     {
+        protected static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         // The name of the command, as used in the console
         abstract public string Name { get; }
 
@@ -20,6 +19,13 @@ namespace Giveaway_Machine.Controller
 
         abstract public void Execute(List<string> arguments);
 
+        protected Facade facade;
+
+        public Command(Facade facade)
+        {
+            this.facade = facade;
+        }
+
         // Used to dynamically get all command classes
         private static IEnumerable<Type> getCommandTypes()
         {
@@ -29,37 +35,27 @@ namespace Giveaway_Machine.Controller
                 .Where(t => t.Namespace.StartsWith("Giveaway_Machine.Controller.Commands"));
         }
 
-        public static Dictionary<string, Command> getAllCommandsDictionary()
+        public static Dictionary<string, Command> CreateCommands(Facade facade)
         {
+            logger.Info("Attempting to register all commands...");
+
             // Obtain the clases
+            logger.Info("Fetching Command Types Dynamically");
             IEnumerable<Type> types = getCommandTypes();
+            logger.Info("Command Types successfully fetched");
 
             // Add types to the Dictionary
             Dictionary<string, Command> commands = new Dictionary<string, Command>();
             foreach (Type t in types)
             {
-                Command command = (Command)Activator.CreateInstance(t);
+                logger.Info("Now Registering Command: " + t.Name);
+                Command command = (Command)Activator.CreateInstance(t, facade);
                 commands.Add(command.Name, command);
             }
 
-            return commands;
-        }
-
-        public static List<Command> getAllCommands()
-        {
-            // Obtain the clases
-            IEnumerable<Type> types = getCommandTypes();
-
-            // Add types to the list
-            List<Command> commands = new List<Command>();
-            foreach (Type t in types)
-            {
-                Command command = (Command)Activator.CreateInstance(t);
-                commands.Add(command);
-            }
+            logger.Info($"{commands.Count} Commands are now successfully registered.");
 
             return commands;
         }
-
     }
 }
