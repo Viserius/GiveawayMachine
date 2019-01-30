@@ -36,7 +36,7 @@ namespace Giveaway_Machine.Application.Gleam
             chromeOptions.AddArgument("-no-sandbox");
             driver = new ChromeDriver(ChromeDriverService.CreateDefaultService(), chromeOptions);
 
-            ReturnedCookieConverter.LoadCookiesIfPossible("https://gleam.io/404", "Gleam", driver, false);
+            CookieHelper.LoadCookiesIfPossible("https://gleam.io/404", "Gleam", driver, false);
             discordLogin();
 
             processOverdueDailyGiveaways();
@@ -191,7 +191,7 @@ namespace Giveaway_Machine.Application.Gleam
             if (loggedInText.Contains("Entering as"))
             {
                 logger.Info("Successfully logged in into Twitter!");
-                ReturnedCookieConverter.SaveCookies("Gleam", driver);
+                CookieHelper.SaveCookies("Gleam", driver);
                 return true;
             } else
             {

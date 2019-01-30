@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Giveaway_Machine.Application
 {
-    class ReturnedCookieConverter
+    class CookieHelper
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -57,7 +57,7 @@ namespace Giveaway_Machine.Application
             BinaryFormatter formatter = new BinaryFormatter();
             try
             {
-                IEnumerable<Cookie> cookies = driver.Manage().Cookies.AllCookies.Select(c => ReturnedCookieConverter.Convert(c)).ToList();
+                IEnumerable<Cookie> cookies = driver.Manage().Cookies.AllCookies.Select(c => CookieHelper.Convert(c)).ToList();
                 formatter.Serialize(fs, cookies);
             }
             catch (SerializationException e)
