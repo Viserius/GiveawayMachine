@@ -182,7 +182,7 @@
     <Compile Include="Application\Gleam\GleamProcessor.cs" />
     <Compile Include="Application\Gleam\GleamRunner.cs" />
     <Compile Include="Application\AbstractRunner.cs" />
-    <Compile Include="Application\ReturnedCookieConverter.cs" />
+    <Compile Include="Application\CookieHelper.cs" />
     <Compile Include="Application\RunnerHandler.cs" />
     <Compile Include="Controller\Commands\ExitCommand.cs" />
     <Compile Include="Controller\Commands\HelpCommand.cs" />
