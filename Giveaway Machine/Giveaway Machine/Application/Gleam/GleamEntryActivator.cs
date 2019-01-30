@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Giveaway_Machine.Application.Gleam.GleamEntries;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
 namespace Giveaway_Machine.Application.Gleam
 {
@@ -13,12 +15,15 @@ namespace Giveaway_Machine.Application.Gleam
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        internal void doEachAction(IWebDriver driver, GleamGiveaway gleamGiveaway)
+        internal bool doEachAction(IWebDriver driver, GleamGiveaway gleamGiveaway)
         {
             logger.Debug("Starting doing each action for the current Gleam Giveaway...");
 
+            GleamEnterDetails.activate(driver, driver.FindElement(By.TagName("body")), gleamGiveaway);
+
             // Get the elements
             ReadOnlyCollection<IWebElement> entryElements = driver.FindElements(By.CssSelector(".entry-method"));
+            bool hasDoneOneEntry = false;
             foreach(IWebElement el in entryElements)
             {
                 if(el.GetAttribute("class").Contains("completed-entry-method"))
@@ -27,16 +32,28 @@ namespace Giveaway_Machine.Application.Gleam
                 }
                 try
                 {
-                    completeAction(driver, el, gleamGiveaway);
+                    if(completeAction(driver, el, gleamGiveaway, entryElements.IndexOf(el) + 1))
+                        hasDoneOneEntry = true;
                 } catch (Exception e)
                 {
                     logger.Error(e, "Failed to complete Entry " + (entryElements.IndexOf(el)+1) + " for giveaway: " + gleamGiveaway.url);
                 }
             }
+            return hasDoneOneEntry;
         }
 
-        private void completeAction(IWebDriver driver, IWebElement el, GleamGiveaway gleamGiveaway)
+        private bool completeAction(IWebDriver driver, IWebElement el, GleamGiveaway gleamGiveaway, int number)
         {
+            WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            try
+            {
+                waiter.Until(ExpectedConditions.ElementToBeClickable(el));
+            } catch (Exception e)
+            {
+                logger.Info(e, "Invisible action. Skipping...");
+                return false;
+            }
+
             IWebElement entryTextElement = el.FindElement(By.CssSelector(".text.user-links"));
             string entryText = entryTextElement.Text;
             string identifier = el.GetAttribute("id");
@@ -54,11 +71,11 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 GleamTwitterRetweet.activate(driver, el, gleamGiveaway);
             }
-            else if (entryText.Contains("Join our Discord"))
+            else if (el.FindElements(By.ClassName("discord-border")).Count > 0 && entryText.ToLower().Contains("join"))
             {
                 GleamDiscordJoin.activate(driver, el, gleamGiveaway);
             }
-            else if (entryText.Contains("Tweet with hashtag"))
+            else if (el.FindElements(By.ClassName("twitter-border")).Count > 0 && entryText.ToLower().Contains("#"))
             {
                 GleamTwitterHashtag.activate(driver, el, gleamGiveaway);
             }
@@ -66,7 +83,7 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 GleamYoutubeSubscribe.activate(driver, el, gleamGiveaway);
             }
-            else if(el.FindElements(By.ClassName("custom-border")).Count > 0) {
+            else if(el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-external-link-square")).Count > 0) {
                 GleamCustomURL.activate(driver, el, gleamGiveaway);
             }
             else if (el.FindElements(By.ClassName("email-border")).Count > 0)
@@ -74,6 +91,10 @@ namespace Giveaway_Machine.Application.Gleam
                 GleamNewsletter.activate(driver, el, gleamGiveaway);
             }
             else if ((entryText.ToLower().Contains("watch") || entryText.ToLower().Contains("view")) && el.FindElements(By.ClassName("youtube-border")).Count > 0)
+            {
+                GleamYoutubeView.activate(driver, el, gleamGiveaway);
+            }
+            else if (entryText.ToLower().Contains("enter using") && el.FindElements(By.ClassName("youtube-border")).Count > 0)
             {
                 GleamYoutubeView.activate(driver, el, gleamGiveaway);
             }
@@ -97,10 +118,38 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 GleamFacebookViewPost.activate(driver, el, gleamGiveaway);
             }
+            else if (el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-star")).Count > 0)
+            {
+                GleamDailyBonus.activate(driver, el, gleamGiveaway);
+            }
+            else if (el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("follow"))
+            {
+                GleamTwitchFollow.activate(driver, el, gleamGiveaway);
+            }
+            else if (el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("enter using twitch"))
+            {
+                GleamDailyBonus.activate(driver, el, gleamGiveaway);
+            }
+            else if (el.FindElements(By.ClassName("googleplus-border")).Count > 0 && entryText.ToLower().Contains("visit"))
+            {
+                GleamCustomURL.activate(driver, el, gleamGiveaway);
+            }
+            else if (el.FindElements(By.ClassName("linkedin-border")).Count > 0 && entryText.ToLower().Contains("follow"))
+            {
+                GleamLinkedInFollow.activate(driver, el, gleamGiveaway);
+            }
+
+            // default case for custom border
+            else if (el.FindElements(By.ClassName("custom-border")).Count > 0)
+            {
+                GleamCustomURL.activate(driver, el, gleamGiveaway);
+            }
             else
             {
                 logger.Warn("Unhandled Gleam Entry: " + entryText + " for the giveaway: " + gleamGiveaway.url);
-            } 
+                return false;
+            }
+            return true;
         }
     }
 }

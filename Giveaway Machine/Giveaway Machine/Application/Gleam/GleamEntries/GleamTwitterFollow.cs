@@ -16,7 +16,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
-            logger.Debug("Now trying to enter the giveaway by following...");
+            logger.Info("Now trying to enter the giveaway by following...");
 
             // Follow the user
             string toFollowUser = Regex.Match(entryElement.FindElement(By.CssSelector(".user-links")).Text, @"(@[a-zA-Z0-9-_]+)").Value;
@@ -25,6 +25,9 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
             // Click the open-button
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             entryElement.Click();
+
+            // Check if additional data must be entered
+            GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
 
             // Submit
             /*try

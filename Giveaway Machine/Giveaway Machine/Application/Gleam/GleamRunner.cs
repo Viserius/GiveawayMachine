@@ -29,7 +29,7 @@ namespace Giveaway_Machine.Application.Gleam
             }
 
             gleamFetcher = new GleamFetcher(facade);
-            //gleamFetcher.getProcessor().Process("https://gleam.io/93X9g/reolink-argus-2-giveaway?gsr=93X9g-f6rGe39zCm");
+            //gleamFetcher.getProcessor().Process("https://gleam.io/15qTW/win-1-of-2-109-turbo-series-main-event-tickets", 10);
             gleamFetcher.startFetching();
         }
 

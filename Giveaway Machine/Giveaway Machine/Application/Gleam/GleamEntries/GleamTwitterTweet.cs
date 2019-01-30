@@ -17,9 +17,12 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway, string identifier)
         {
-            logger.Debug("Now trying to enter the giveaway by tweeting...");
+            logger.Info("Now trying to enter the giveaway by tweeting...");
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             entryElement.Click();
+
+            // Check if additional data must be entered
+            GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
 
             // Tweet
             waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector(".quoted-text .quoted-text__content"))));

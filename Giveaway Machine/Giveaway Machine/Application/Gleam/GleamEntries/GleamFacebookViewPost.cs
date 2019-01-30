@@ -14,9 +14,13 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
-            logger.Debug("Now trying to enter the giveaway by watching a Facebook Post...");
-            WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+            GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
+            logger.Info("Now trying to enter the giveaway by watching a Facebook Post...");
+            WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
             entryElement.Click();
+
+            // Check if additional data must be entered
+            GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
 
             // Watch the video
             waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector("a.btn.btn-primary"))));

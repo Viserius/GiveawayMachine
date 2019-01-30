@@ -15,9 +15,12 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
-            logger.Debug("Now trying to enter the giveaway by visiting a URL...");
+            logger.Info("Now trying to enter the giveaway by visiting a URL...");
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             entryElement.Click();
+
+            // Check if additional data must be entered
+            GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
 
             // Click the button
             waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector(".btn.btn-info.btn-large"))));
@@ -32,6 +35,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
             driver.SwitchTo().Window(driver.WindowHandles.First());
 
             // complete
+            waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector("a.btn.btn-primary"))));
             entryElement.FindElement(By.CssSelector("a.btn.btn-primary")).Click();
         }
     }

@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Giveaway_Machine.Application.Gleam.GleamEntries
 {
-    class GleamInstagramViewPost
+    class GleamLinkedInFollow
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
             GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
-            logger.Info("Now trying to enter the giveaway by watching an Instagram Post...");
+            logger.Info("Now trying to enter the giveaway by simulating LinkedIn follow...");
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
             entryElement.Click();
 

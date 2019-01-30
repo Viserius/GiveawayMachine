@@ -16,7 +16,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
-            logger.Debug("Now trying to enter the giveaway by tweeting...");
+            logger.Info("Now trying to enter the giveaway by tweeting...");
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             entryElement.Click();
 
@@ -27,6 +27,9 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
             // Submit
             waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.PartialLinkText("Already tweeted"))));
             entryElement.FindElement(By.PartialLinkText("Already tweeted")).Click();
+
+            // Check if additional data must be entered
+            GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
         }
     }
 }

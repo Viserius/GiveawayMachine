@@ -32,10 +32,17 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 logger.Info(args.Tweet);
                 var urls = args.Tweet.Urls;
-                foreach(IUrlEntity url in urls)
+                foreach (IUrlEntity url in urls)
                 {
-                    GleamProcessor.Process(url.ExpandedURL);
+                    GleamProcessor.Process(url.ExpandedURL, 5);
                 }
+            };
+
+            stream.StreamStopped += (sender, args) =>
+            {
+                logger.Info(args.Exception, "YouTube Stream stopped with message:" + args.DisconnectMessage);
+                logger.Info("Retrying to connect");
+                stream.StartStreamMatchingAllConditions();
             };
 
             stream.StartStreamMatchingAllConditions();

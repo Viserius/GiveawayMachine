@@ -44,10 +44,10 @@ namespace Giveaway_Machine.Application.Gleam
 
         private void processOverdueDailyGiveaways()
         {
-            foreach(KeyValuePair<string, GleamGiveaway> kv in processedGiveaways.Where(c => c.Value.hasDailyEntry))
+            foreach(KeyValuePair<string, GleamGiveaway> kv in processedGiveaways.Where(c => c.Value != null && c.Value.hasDailyEntry).Where(c => c.Value != null && c.Value.lastEntry < DateTime.Today))
             {
                 logger.Info("Loading Already Entered giveaway with daily entries...");
-                Process(kv.Key);
+                Process(kv.Key, 1);
             }
         }
 
@@ -89,31 +89,61 @@ namespace Giveaway_Machine.Application.Gleam
             return rx.IsMatch(URL);
         }
 
-        internal void Process(string expandedURL)
+        internal void Process(string expandedURL, int timeoutMinutes)
         {
             logger.Info("Now processing Gleam Giveaway with URL: " + expandedURL);
             if (processedGiveaways.ContainsKey(expandedURL))
+            {
+                logger.Info("Already entered... Skipping this one...");
                 return;
+            }
 
             // Go to the Giveaway
             driver.Navigate().GoToUrl(expandedURL);
+            if (!checkIfValidURL()) return;
             LoginIfNecessary();
 
             // For each action, call the activator
             GleamGiveaway gleamGiveaway = loadGiveAwayObject(expandedURL);
-            gleamEntryActivator.doEachAction(driver, gleamGiveaway);
+            bool succeed = gleamEntryActivator.doEachAction(driver, gleamGiveaway);
+            if(succeed) gleamEntryActivator.doEachAction(driver, gleamGiveaway);
 
-            if (hasDailyEntries())
+            if (succeed && hasDailyEntries())
                 gleamGiveaway.hasDailyEntry = true;
             gleamGiveaway.lastEntry = DateTime.Now;
 
             // Add to the list
             if (!processedGiveaways.ContainsKey(gleamGiveaway.url))
                 processedGiveaways.Add(gleamGiveaway.url, gleamGiveaway);
-            
+            // Save out of precaution
+            SaveProcessedURLs();
+
             // Sleep before doing the next one to prevent detection...
-            logger.Info("Gleam Processor goes to sleep, to prevent detection...");
-            Thread.Sleep(10 * 60 * 1000);
+            if (succeed)
+            {
+                logger.Info("Gleam Processor goes to sleep, to prevent detection...");
+                Thread.Sleep(timeoutMinutes * 60 * 1000);
+            }
+        }
+
+        private bool checkIfValidURL()
+        {
+            WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            try
+            {
+                waiter.Until(ExpectedConditions.ElementExists(By.CssSelector(".campaign.competition")));
+
+                waiter.Until(ExpectedConditions.ElementExists(By.CssSelector(".purple-square span span")));
+                if (driver.FindElement(By.CssSelector(".purple-square span span")).Text.Contains("Ended"))
+                    return false;
+
+            } catch (Exception e)
+            {
+                logger.Info(e, "This is not a valid URL.");
+                processedGiveaways.Add(driver.Url, null);
+                return false;
+            }
+            return true;
         }
 
         private GleamGiveaway loadGiveAwayObject(string URL)
@@ -130,7 +160,7 @@ namespace Giveaway_Machine.Application.Gleam
         private bool LoginIfNecessary()
         {
             // Check if already logged in
-            if(driver.PageSource.Contains("Mark S."))
+            if (driver.PageSource.Contains("Mark S."))
             {
                 logger.Debug("De browser was al ingelogd!");
                 return true;
@@ -231,7 +261,7 @@ namespace Giveaway_Machine.Application.Gleam
 
         public bool hasDailyEntries()
         {
-            return (driver.FindElements(By.ClassName("fa-clock-o")).Count > 0) || (driver.PageSource.Contains("Click For a Daily Bonus Entry"));
+            return (driver.FindElements(By.ClassName("fa-clock-o")).Count > 0) || (driver.PageSource.Contains("Daily Bonus Entry"));
         }
     }
 }
