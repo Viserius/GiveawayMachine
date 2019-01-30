@@ -37,3 +37,6 @@ GiveawayMachine is a C# application, that crawls for Gleam.IO giveaways, and aut
 
 # Running
 Compile using Visual Studio, and run from the debug folder
+
+# Contributing
+Feel free to contribute, open issues or open Pull Requests.
