@@ -34,6 +34,7 @@ GiveawayMachine is a C# application, that crawls for Gleam.IO giveaways, and aut
 3. Create a Twitter-App
 4. Generate Consumer Keys and Access Tokens for that Twitter App
 5. Copy App.config.example to App.Config and enter your information under appSettings (credentials are only used locally)
+6. Download a Chrome Driver that's compatible with your version of chrome, and place it in the project folder. (chromedriver.chromium.org)
 
 # Running
 Compile using Visual Studio, and run from the debug folder
