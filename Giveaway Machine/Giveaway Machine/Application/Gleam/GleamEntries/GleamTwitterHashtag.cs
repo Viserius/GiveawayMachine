@@ -16,7 +16,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
 
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
-            logger.Info("Now trying to enter the giveaway by tweeting...");
+            logger.Info("Now trying to enter the giveaway by tweeting with Hashtag...");
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             entryElement.Click();
 

@@ -16,7 +16,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
         internal static void activate(IWebDriver driver, IWebElement entryElement, GleamGiveaway gleamGiveaway)
         {
             logger.Info("Now trying to enter the giveaway by visiting a URL...");
-            WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
             entryElement.Click();
 
             // Check if additional data must be entered
@@ -26,17 +26,35 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
             waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector(".btn.btn-info.btn-large"))));
             entryElement.FindElement(By.CssSelector(".btn.btn-info.btn-large")).Click();
 
-            // Close the new window
+            // Check if we can finalize the entry
+            waiter.Until(condition =>
+            {
+                try
+                {
+                    entryElement.FindElement(By.CssSelector("a.btn.btn-primary")).Click();
+                    return true;
+                } catch (Exception e)
+                {
+                    // Check if the entry was automatically completed
+                    if(entryElement.FindElements(By.CssSelector(".entry-method .fa-check")).Count > 0) {
+                        return true;
+                    }
+
+                    // Not yet completed, keep retrying
+                    // Open the new window
+                    driver.SwitchTo().Window(driver.WindowHandles.Last());
+                    Thread.Sleep(5000);
+                    driver.SwitchTo().Window(driver.WindowHandles.First());
+                    return false;
+                }
+            });
+
+            // Open the new window
             driver.SwitchTo().Window(driver.WindowHandles.Last());
-            Thread.Sleep(20000);
             driver.Close();
 
             // Switch to original window
             driver.SwitchTo().Window(driver.WindowHandles.First());
-
-            // complete
-            waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector("a.btn.btn-primary"))));
-            entryElement.FindElement(By.CssSelector("a.btn.btn-primary")).Click();
         }
     }
 }

@@ -32,6 +32,13 @@ namespace Giveaway_Machine.Application
             driver.Navigate().GoToUrl(URL);
             if (File.Exists(serviceName + "Cookies.dat"))
             {
+                if(File.GetLastWriteTime(serviceName + "Cookies.dat").Subtract(DateTime.Now).Days >= 5)
+                {
+                    // Cookies file is outdated, remove it.
+                    File.Delete(serviceName + "Cookies.dat");
+                    return;
+                }
+
                 logger.Info("Loading previous " + serviceName + "cookies from file...");
                 fs = new FileStream(serviceName + "Cookies.dat", FileMode.Open);
                 BinaryFormatter formatter = new BinaryFormatter();

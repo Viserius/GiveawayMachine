@@ -29,8 +29,8 @@ namespace Giveaway_Machine.Application.Gleam
             }
 
             gleamFetcher = new GleamFetcher(facade);
-            gleamFetcher.getProcessor().Process("https://gleam.io/2248b/hellcase-blackfriday19-giveaway?gsr=2248b-SaAHoHXO1h", 10);
-            //gleamFetcher.startFetching();
+            //gleamFetcher.getProcessor().Process("https://gleam.io/2248b/hellcase-blackfriday19-giveaway?gsr=2248b-SaAHoHXO1h", 10);
+            gleamFetcher.startFetching();
         }
 
         public override void Stop()

@@ -34,7 +34,7 @@ namespace Giveaway_Machine.Application.Gleam
                 var urls = args.Tweet.Urls;
                 foreach (IUrlEntity url in urls)
                 {
-                    GleamProcessor.Process(url.ExpandedURL, 5);
+                    GleamProcessor.Process(url.ExpandedURL, 0);
                 }
             };
 

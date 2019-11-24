@@ -46,7 +46,7 @@ namespace Giveaway_Machine.Application.Gleam
             foreach(KeyValuePair<string, GleamGiveaway> kv in processedGiveaways.Where(c => c.Value != null && c.Value.hasDailyEntry).Where(c => c.Value != null && c.Value.lastEntry < DateTime.Today))
             {
                 logger.Info("Loading Already Entered giveaway with daily entries...");
-                Process(kv.Key, 1);
+                Process(kv.Key, 0);
             }
         }
 
@@ -159,7 +159,10 @@ namespace Giveaway_Machine.Application.Gleam
         private bool LoginIfNecessary()
         {
             // Check if already logged in
-            if (driver.PageSource.Contains("Mark S."))
+            try
+            {
+                driver.FindElement(By.CssSelector(".entry-content > .text > div.small-bar.contestant-logged-in.ng-hide"));
+            } catch (NoSuchElementException)
             {
                 logger.Debug("The browser was already logged in!");
                 return true;

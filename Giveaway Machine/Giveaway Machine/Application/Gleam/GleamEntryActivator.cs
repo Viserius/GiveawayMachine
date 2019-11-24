@@ -58,6 +58,10 @@ namespace Giveaway_Machine.Application.Gleam
             string entryText = entryTextElement.Text;
             string identifier = el.GetAttribute("id");
 
+            // Skip hidden entries
+            if (entryText.Length < 3)
+                return false;
+
             if(entryText.Contains("Follow") && entryText.Contains("on Twitter"))
             {
                 GleamTwitterFollow.activate(driver, el, gleamGiveaway);
@@ -137,6 +141,18 @@ namespace Giveaway_Machine.Application.Gleam
             else if (el.FindElements(By.ClassName("linkedin-border")).Count > 0 && entryText.ToLower().Contains("follow"))
             {
                 GleamLinkedInFollow.activate(driver, el, gleamGiveaway);
+            }else if (entryText.Equals("Refer Friends For Extra Entries"))
+            {
+                logger.Debug("Skipping Friend Referral Entry");
+                return false;
+            }
+            else if(el.FindElements(By.ClassName("youtube-border")).Count > 0 && entryText.ToLower().Contains("visit"))
+            {
+                GleamCustomURL.activate(driver, el, gleamGiveaway);
+            } else if(el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("bonus for twitch subscribers"))
+            {
+                logger.Debug("Skipping Twitch Subscribers Entry");
+                return false;
             }
 
             // default case for custom border
