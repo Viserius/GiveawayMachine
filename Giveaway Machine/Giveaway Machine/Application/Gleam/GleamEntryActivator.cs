@@ -62,7 +62,7 @@ namespace Giveaway_Machine.Application.Gleam
             if (entryText.Length < 3)
                 return false;
 
-            if(entryText.Contains("Follow") && entryText.Contains("on Twitter"))
+            if (entryText.Contains("Follow") && entryText.Contains("on Twitter"))
             {
                 GleamTwitterFollow.activate(driver, el, gleamGiveaway);
             }
@@ -71,7 +71,7 @@ namespace Giveaway_Machine.Application.Gleam
 
                 GleamTwitterTweet.activate(driver, el, gleamGiveaway, identifier);
             }
-            else if(entryText.Contains("Retweet") && entryText.Contains("on Twitter"))
+            else if (entryText.Contains("Retweet") && entryText.Contains("on Twitter"))
             {
                 GleamTwitterRetweet.activate(driver, el, gleamGiveaway);
             }
@@ -87,7 +87,13 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 GleamYoutubeSubscribe.activate(driver, el, gleamGiveaway);
             }
-            else if(el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-external-link-square")).Count > 0) {
+            else if (el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-external-link-square")).Count > 0
+                || entryText.ToLower().Contains("visit") && el.FindElements(By.ClassName("instagram-border")).Count > 0
+                || entryText.ToLower().Contains("visit") && el.FindElements(By.ClassName("facebook-border")).Count > 0
+                || entryText.ToLower().Contains("enter using twitter") && el.FindElements(By.ClassName("twitter-border")).Count > 0
+                || el.FindElements(By.ClassName("googleplus-border")).Count > 0 && entryText.ToLower().Contains("visit")
+                || el.FindElements(By.ClassName("youtube-border")).Count > 0 && entryText.ToLower().Contains("visit")
+                ) {
                 GleamCustomURL.activate(driver, el, gleamGiveaway);
             }
             else if (el.FindElements(By.ClassName("email-border")).Count > 0)
@@ -102,41 +108,22 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 GleamYoutubeView.activate(driver, el, gleamGiveaway);
             }
-            else if (entryText.ToLower().Contains("visit") && el.FindElements(By.ClassName("instagram-border")).Count > 0)
+            else if (entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on instagram")
+                || entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on twitter")
+                || entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on facebook")
+                )
             {
-                GleamCustomURL.activate(driver, el, gleamGiveaway);
+                GleamClickAndWait.activate(driver, el, gleamGiveaway);
             }
-            else if (entryText.ToLower().Contains("visit") && el.FindElements(By.ClassName("facebook-border")).Count > 0)
-            {
-                GleamCustomURL.activate(driver, el, gleamGiveaway);
-            }
-            else if (entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on facebook"))
-            {
-                GleamFacebookViewPost.activate(driver, el, gleamGiveaway);
-            }
-            else if (entryText.ToLower().Contains("enter using twitter") && el.FindElements(By.ClassName("twitter-border")).Count > 0)
-            {
-                GleamCustomURL.activate(driver, el, gleamGiveaway);
-            }
-            else if (entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on instagram"))
-            {
-                GleamFacebookViewPost.activate(driver, el, gleamGiveaway);
-            }
-            else if (el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-star")).Count > 0)
-            {
-                GleamDailyBonus.activate(driver, el, gleamGiveaway);
+            else if (el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-star")).Count > 0
+                || el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("enter using twitch")
+                || entryText.ToLower().Contains("entry confirmed - more ways to enter below")
+                ) {
+                GleamAutoEntry.activate(driver, el, gleamGiveaway);
             }
             else if (el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("follow"))
             {
                 GleamTwitchFollow.activate(driver, el, gleamGiveaway);
-            }
-            else if (el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("enter using twitch"))
-            {
-                GleamDailyBonus.activate(driver, el, gleamGiveaway);
-            }
-            else if (el.FindElements(By.ClassName("googleplus-border")).Count > 0 && entryText.ToLower().Contains("visit"))
-            {
-                GleamCustomURL.activate(driver, el, gleamGiveaway);
             }
             else if (el.FindElements(By.ClassName("linkedin-border")).Count > 0 && entryText.ToLower().Contains("follow"))
             {
@@ -145,10 +132,6 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 logger.Debug("Skipping Friend Referral Entry");
                 return false;
-            }
-            else if(el.FindElements(By.ClassName("youtube-border")).Count > 0 && entryText.ToLower().Contains("visit"))
-            {
-                GleamCustomURL.activate(driver, el, gleamGiveaway);
             } else if(el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("bonus for twitch subscribers"))
             {
                 logger.Debug("Skipping Twitch Subscribers Entry");
@@ -158,6 +141,7 @@ namespace Giveaway_Machine.Application.Gleam
             // default case for custom border
             else if (el.FindElements(By.ClassName("custom-border")).Count > 0)
             {
+                logger.Info("Default case triggered.");
                 GleamCustomURL.activate(driver, el, gleamGiveaway);
             }
             else

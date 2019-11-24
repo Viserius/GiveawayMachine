@@ -25,8 +25,8 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
                 WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
 
                 // Click the button
-                waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector(".form-wrapper label.checkbox"))));
-                entryElement.FindElement(By.CssSelector(".form-wrapper label.checkbox")).Click();
+                //waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector(".form-wrapper label.checkbox"))));
+                //entryElement.FindElement(By.CssSelector(".form-wrapper label.checkbox")).Click();
 
                 try
                 {
