@@ -40,7 +40,7 @@ namespace Giveaway_Machine.Application.Gleam
 
             stream.StreamStopped += (sender, args) =>
             {
-                logger.Info(args.Exception, "YouTube Stream stopped with message:" + args.DisconnectMessage);
+                logger.Info(args.Exception, "Twitter Stream stopped with message:" + args.DisconnectMessage);
                 logger.Info("Retrying to connect");
                 stream.StartStreamMatchingAllConditions();
             };

@@ -31,7 +31,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
                 try
                 {
                     entryElement.FindElement(By.CssSelector("input[age-format=\"MDY\"]")).SendKeys("02071998");
-                } catch (NoSuchElementException e)
+                } catch (NoSuchElementException)
                 {
                     logger.Debug("Enter form does not include date.");
                 }
@@ -44,7 +44,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
                 try
                 {
                     while(entryElement.FindElement(By.CssSelector(".contestant.compact-box")).Displayed) { Thread.Sleep(1 * 1000); }
-                } catch (Exception e)
+                } catch (Exception)
                 {
                     logger.Info("Succesfully entered information... Now continuing...");
                 }

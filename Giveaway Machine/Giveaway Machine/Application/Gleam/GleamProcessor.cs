@@ -32,8 +32,7 @@ namespace Giveaway_Machine.Application.Gleam
 
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.AddArgument("--no-sandbox");
-            chromeOptions.AddArgument("no-sandbox");
-            chromeOptions.AddArgument("-no-sandbox");
+            chromeOptions.AddArgument("--log-level=3");
             driver = new ChromeDriver(ChromeDriverService.CreateDefaultService(), chromeOptions);
 
             CookieHelper.LoadCookiesIfPossible("https://gleam.io/404", "Gleam", driver, false);
@@ -162,11 +161,11 @@ namespace Giveaway_Machine.Application.Gleam
             // Check if already logged in
             if (driver.PageSource.Contains("Mark S."))
             {
-                logger.Debug("De browser was al ingelogd!");
+                logger.Debug("The browser was already logged in!");
                 return true;
             }
 
-            logger.Info("Gleam is nog niet ingelogd met Twitter... Nu aan het inloggen...");
+            logger.Info("Gleam is not yet logged in to Twitter. Logging in now...");
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
 
             // Check if the page successfully loads:
@@ -186,8 +185,8 @@ namespace Giveaway_Machine.Application.Gleam
             driver.SwitchTo().Window(driver.WindowHandles.First());
 
             // Check if actually logged in...
-            waiter.Until(e => e.FindElement(By.CssSelector(".text:nth-child(2) .small-bar--text > .ng-binding")));
-            string loggedInText = driver.FindElement(By.CssSelector(".text:nth-child(2) .small-bar--text > .ng-binding")).Text;
+            waiter.Until(e => e.FindElement(By.CssSelector(".entry-content > .text > div.small-bar.contestant-logged-in:not(.ng-hide)")));
+            string loggedInText = driver.FindElement(By.CssSelector(".entry-content > .text .contestant-logged-in .small-bar--text")).Text;
             if (loggedInText.Contains("Entering as"))
             {
                 logger.Info("Successfully logged in into Twitter!");
@@ -204,7 +203,7 @@ namespace Giveaway_Machine.Application.Gleam
         {
             WebDriverWait waiter = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             logger.Debug("Clicking on Twitter login icon...");
-            driver.FindElement(By.CssSelector(".text:nth-child(2) .ng-scope:nth-child(5) .fa")).Click();
+            driver.FindElement(By.CssSelector(".entry-content > .text a.no-underline.twitter-background")).Click();
 
             logger.Debug("Switching to Twitter login page...");
             driver.SwitchTo().Window(driver.WindowHandles.Last());
