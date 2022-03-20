@@ -33,6 +33,7 @@ namespace Giveaway_Machine.Application.Gleam
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.AddArgument("--no-sandbox");
             chromeOptions.AddArgument("--log-level=3");
+            chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
             driver = new ChromeDriver(ChromeDriverService.CreateDefaultService(), chromeOptions);
 
             CookieHelper.LoadCookiesIfPossible("https://gleam.io/404", "Gleam", driver, false);
@@ -43,7 +44,7 @@ namespace Giveaway_Machine.Application.Gleam
 
         private void processOverdueDailyGiveaways()
         {
-            foreach(KeyValuePair<string, GleamGiveaway> kv in processedGiveaways.Where(c => c.Value != null && c.Value.hasDailyEntry).Where(c => c.Value != null && c.Value.lastEntry < DateTime.Today))
+            foreach (KeyValuePair<string, GleamGiveaway> kv in processedGiveaways.Where(c => c.Value != null && c.Value.hasDailyEntry).Where(c => c.Value != null && c.Value.lastEntry < DateTime.Today))
             {
                 logger.Info("Loading Already Entered giveaway with daily entries...");
                 Process(kv.Key, 0);
@@ -57,7 +58,8 @@ namespace Giveaway_Machine.Application.Gleam
             try
             {
                 fs = new FileStream("GleamGiveaways.dat", FileMode.Open);
-            } catch (FileNotFoundException e)
+            }
+            catch (FileNotFoundException e)
             {
                 logger.Warn(e, "Could not load Gleam Giveaways... File is missing!");
                 processedGiveaways = new Dictionary<string, GleamGiveaway>();
@@ -69,7 +71,7 @@ namespace Giveaway_Machine.Application.Gleam
 
                 // Deserialize the URLs from the file and 
                 // assign the reference to the local variable.
-                processedGiveaways = (Dictionary<string,GleamGiveaway>)formatter.Deserialize(fs);
+                processedGiveaways = (Dictionary<string, GleamGiveaway>)formatter.Deserialize(fs);
             }
             catch (SerializationException e)
             {
@@ -105,7 +107,7 @@ namespace Giveaway_Machine.Application.Gleam
             // For each action, call the activator
             GleamGiveaway gleamGiveaway = loadGiveAwayObject(expandedURL);
             bool succeed = gleamEntryActivator.doEachAction(driver, gleamGiveaway);
-            if(succeed) gleamEntryActivator.doEachAction(driver, gleamGiveaway);
+            if (succeed) gleamEntryActivator.doEachAction(driver, gleamGiveaway);
 
             if (succeed && hasDailyEntries())
                 gleamGiveaway.hasDailyEntry = true;
@@ -136,7 +138,8 @@ namespace Giveaway_Machine.Application.Gleam
                 if (driver.FindElement(By.CssSelector(".purple-square span span")).Text.Contains("Ended"))
                     return false;
 
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 logger.Info(e, "This is not a valid URL.");
                 processedGiveaways.Add(driver.Url, null);
@@ -162,7 +165,8 @@ namespace Giveaway_Machine.Application.Gleam
             try
             {
                 driver.FindElement(By.CssSelector(".entry-content > .text > div.small-bar.contestant-logged-in.ng-hide"));
-            } catch (NoSuchElementException)
+            }
+            catch (NoSuchElementException)
             {
                 logger.Debug("The browser was already logged in!");
                 return true;
@@ -173,7 +177,7 @@ namespace Giveaway_Machine.Application.Gleam
 
             // Check if the page successfully loads:
             bool openedLoginWindow = false;
-            while(!openedLoginWindow)
+            while (!openedLoginWindow)
             {
                 openedLoginWindow = SwitchToTwitterLoginPage();
             }
@@ -195,7 +199,8 @@ namespace Giveaway_Machine.Application.Gleam
                 logger.Info("Successfully logged in into Twitter!");
                 CookieHelper.SaveCookies("Gleam", driver);
                 return true;
-            } else
+            }
+            else
             {
                 logger.Error("Failed to login into Twitter! After logging in, the text says: " + loggedInText);
                 return false;
@@ -214,7 +219,8 @@ namespace Giveaway_Machine.Application.Gleam
             try
             {
                 waiter.Until(ExpectedConditions.ElementExists(By.Id("header")));
-            } catch (WebDriverException e)
+            }
+            catch (WebDriverException e)
             {
                 logger.Error(e, "Failed to open the twitter login screen...");
                 driver.SwitchTo().Window(driver.WindowHandles.First());
@@ -264,6 +270,12 @@ namespace Giveaway_Machine.Application.Gleam
         public bool hasDailyEntries()
         {
             return (driver.FindElements(By.ClassName("fa-clock-o")).Count > 0) || (driver.PageSource.Contains("Daily Bonus Entry"));
+        }
+
+        public void stop()
+        {
+            if (driver != null)
+                driver.Quit();
         }
     }
 }

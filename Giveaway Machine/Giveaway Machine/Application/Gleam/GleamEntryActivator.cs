@@ -24,19 +24,20 @@ namespace Giveaway_Machine.Application.Gleam
             // Get the elements
             ReadOnlyCollection<IWebElement> entryElements = driver.FindElements(By.CssSelector(".entry-method"));
             bool hasDoneOneEntry = false;
-            foreach(IWebElement el in entryElements)
+            foreach (IWebElement el in entryElements)
             {
-                if(el.GetAttribute("class").Contains("completed-entry-method"))
+                if (el.GetAttribute("class").Contains("completed-entry-method"))
                 {
                     continue;
                 }
                 try
                 {
-                    if(completeAction(driver, el, gleamGiveaway, entryElements.IndexOf(el) + 1))
+                    if (completeAction(driver, el, gleamGiveaway, entryElements.IndexOf(el) + 1))
                         hasDoneOneEntry = true;
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
-                    logger.Error(e, "Failed to complete Entry " + (entryElements.IndexOf(el)+1) + " for giveaway: " + gleamGiveaway.url);
+                    logger.Error(e, "Failed to complete Entry " + (entryElements.IndexOf(el) + 1) + " for giveaway: " + gleamGiveaway.url);
                 }
             }
             return hasDoneOneEntry;
@@ -48,7 +49,8 @@ namespace Giveaway_Machine.Application.Gleam
             try
             {
                 waiter.Until(ExpectedConditions.ElementToBeClickable(el));
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 logger.Info(e, "Invisible action. Skipping...");
                 return false;
@@ -93,7 +95,8 @@ namespace Giveaway_Machine.Application.Gleam
                 || entryText.ToLower().Contains("enter using twitter") && el.FindElements(By.ClassName("twitter-border")).Count > 0
                 || el.FindElements(By.ClassName("googleplus-border")).Count > 0 && entryText.ToLower().Contains("visit")
                 || el.FindElements(By.ClassName("youtube-border")).Count > 0 && entryText.ToLower().Contains("visit")
-                ) {
+                )
+            {
                 GleamCustomURL.activate(driver, el, gleamGiveaway);
             }
             else if (el.FindElements(By.ClassName("email-border")).Count > 0)
@@ -108,17 +111,11 @@ namespace Giveaway_Machine.Application.Gleam
             {
                 GleamYoutubeView.activate(driver, el, gleamGiveaway);
             }
-            else if (entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on instagram")
-                || entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on twitter")
-                || entryText.ToLower().Contains("view this") && entryText.ToLower().Contains("on facebook")
-                )
-            {
-                GleamClickAndWait.activate(driver, el, gleamGiveaway);
-            }
             else if (el.FindElements(By.ClassName("custom-border")).Count > 0 && el.FindElements(By.ClassName("fa-star")).Count > 0
                 || el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("enter using twitch")
                 || entryText.ToLower().Contains("entry confirmed - more ways to enter below")
-                ) {
+                )
+            {
                 GleamAutoEntry.activate(driver, el, gleamGiveaway);
             }
             else if (el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("follow"))
@@ -128,11 +125,13 @@ namespace Giveaway_Machine.Application.Gleam
             else if (el.FindElements(By.ClassName("linkedin-border")).Count > 0 && entryText.ToLower().Contains("follow"))
             {
                 GleamLinkedInFollow.activate(driver, el, gleamGiveaway);
-            }else if (entryText.Equals("Refer Friends For Extra Entries"))
+            }
+            else if (entryText.Equals("Refer Friends For Extra Entries"))
             {
                 logger.Debug("Skipping Friend Referral Entry");
                 return false;
-            } else if(el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("bonus for twitch subscribers"))
+            }
+            else if (el.FindElements(By.ClassName("twitchtv-border")).Count > 0 && entryText.ToLower().Contains("bonus for twitch subscribers"))
             {
                 logger.Debug("Skipping Twitch Subscribers Entry");
                 return false;

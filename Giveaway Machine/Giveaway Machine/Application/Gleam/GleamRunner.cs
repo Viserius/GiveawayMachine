@@ -30,7 +30,7 @@ namespace Giveaway_Machine.Application.Gleam
 
             gleamFetcher = new GleamFetcher(facade);
             gleamFetcher.getProcessor().Process("https://gleam.io/Y9cEC/seandnguyen-keysmart-pro-giveaway", 10);
-            //gleamFetcher.startFetching();
+            gleamFetcher.startFetching();
         }
 
         public override void Stop()

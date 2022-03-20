@@ -51,8 +51,10 @@ namespace Giveaway_Machine.Application.Gleam
         internal void Stop()
         {
             logger.Info("Stopping the stream of incoming Gleam Giveaways...");
-            if(stream != null)
+            if (stream != null)
                 stream.StopStream();
+            if (GleamProcessor != null)
+                GleamProcessor.stop();
             GleamProcessor.SaveProcessedURLs();
         }
 
