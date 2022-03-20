@@ -25,6 +25,7 @@ namespace Giveaway_Machine.Application.Gleam.GleamEntries
             GleamEnterDetails.activate(driver, entryElement, gleamGiveaway);
 
             // Join the discord
+            Thread.Sleep(1000);
             waiter.Until(ExpectedConditions.ElementToBeClickable(entryElement.FindElement(By.CssSelector(".btn.btn-info.btn-large"))));
             entryElement.FindElement(By.CssSelector(".btn.btn-info.btn-large")).Click();
             driver.SwitchTo().Window(driver.WindowHandles.Last());
